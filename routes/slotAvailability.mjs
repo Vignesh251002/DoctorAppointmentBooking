@@ -43,7 +43,7 @@ router.get("/",verifytoken, async (req, res) => {
         const slotsWithStatus = allSlots.map(slot => {
             const matchingSlot = bookedTimes.find(booked => 
                 moment(slot.start_time, "hh:mm A").format("HH:mm a") === moment(booked.start, "HH:mm a").format("HH:mm a") &&
-                moment(slot.end_time, "hh:mm A").format("HH:mm a") === moment(booked.end, "HH:mm a").format("HH:mm a")
+                moment(slot.end_time, "hh:mm A").format("HH:mm a") === moment(booked.end, "HH:mm a").format("HH:mm a") && booked.status=='booked'
             );
             return {
                 slot,

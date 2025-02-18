@@ -31,7 +31,7 @@ router.post("/",verifytoken, async (req, res) => {
 
         console.log(req.user.email);
 
-        const { doctor_id, patient_id, appointment_date,appointment_session, startTime, endTime, } = req.body;
+        const { doctor_id, patient_id, appointment_date, appointment_session, startTime, endTime, } = req.body;
         console.log(req.body);
         
         if(patient_id!=req.user.userid){
@@ -45,7 +45,7 @@ router.post("/",verifytoken, async (req, res) => {
         const formattedEnd = moment(endTime, "hh:mm A").format("HH:mm:ss");
         
 
-        const availabilityQuery = `SELECT start_time, end_time,slot_interval FROM doctor_availability WHERE doctor_id = $1 AND date = $2`;
+        const availabilityQuery = `SELECT start_time, end_time, slot_interval FROM doctor_availability WHERE doctor_id = $1 AND date = $2`;
         const availabilityResult = await pool.query(availabilityQuery, [doctor_id, appointment_date]);
         console.log(availabilityResult);
 
@@ -75,9 +75,6 @@ router.post("/",verifytoken, async (req, res) => {
             throw new Error("This time slot is already booked");
         }
 
-
-
-        // TODO: Before inserting records the slots need to be validated (Check is that proper time frame)
         const insertQuery = `INSERT INTO appointments (id ,doctor_id, patient_id, appointment_date, appointment_session, start_time, end_time, status) VALUES ($1, $2, $3, $4, $5,$6,$7 ,'booked') RETURNING *`;
         const newAppointment = await pool.query(insertQuery, [id, doctor_id, patient_id, appointment_date,appointment_session, formattedStart, formattedEnd]);
         
