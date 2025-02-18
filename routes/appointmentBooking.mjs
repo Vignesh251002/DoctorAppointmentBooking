@@ -8,8 +8,8 @@ import { verifytoken } from '../utils/authentication.mjs';
 const router = express.Router();
 
 
-let statuscode=400
-let message
+let statuscode=400;
+let message;
 
 function validateMinutesBasedOnInterval(time, intervalMinutes) {
 const trimmedTime = time.trim(); 

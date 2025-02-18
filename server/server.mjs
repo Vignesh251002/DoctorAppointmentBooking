@@ -9,6 +9,7 @@ import patientsProfileroute from '../routes/updatePatientDetails.mjs'
 import cancelAppointmentroute from '../routes/cancelAppointment.mjs'
 import updateAvailabilitySlotroute from '../routes/updateAvailabilitySlots.mjs'
 import deleteAvailabilitySlotroute from '../routes/removeAvailabilitySlots.mjs'
+import viewDoctorProfileroute from '../routes/viewDoctorProfile.mjs'
 import signuproute from '../routes/signup.mjs'
 import verifyotproute from '../routes/verifyotp.mjs'
 import loginroute from "../routes/login.mjs"
@@ -32,6 +33,7 @@ app.use('/patientProfile',patientsProfileroute)
 app.use('/cancel-appointment',cancelAppointmentroute)
 app.use('/update-availability',updateAvailabilitySlotroute)
 app.use('/delete-availability',deleteAvailabilitySlotroute)
+app.use('/view-doctorProfile',viewDoctorProfileroute)
 
 app.listen(3000, () => {
     console.log("Server running on port 3000");
