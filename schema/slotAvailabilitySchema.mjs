@@ -18,15 +18,13 @@ const slotAvailabilitySchema = Joi.object({
             "number.integer": "Doctor ID must be an integer."
         }),
     session: Joi.string()
-        .valid("Morning", "Afternoon", "Evening")
+        .valid("Morning", "Afternoon")
         .required()
         .messages({
             "any.required": "Session is required.",
             "any.only": "Session must be 'Morning', 'Afternoon', or 'Evening'."
         }),
     date: Joi.date()
-        .iso()
-        .greater("now")
         .required()
         .messages({
             "any.required": "Date is required.",

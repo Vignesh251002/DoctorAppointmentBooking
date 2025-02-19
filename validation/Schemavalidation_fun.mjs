@@ -69,6 +69,25 @@ const updatePatientValidation=(schema,payload)=>{
     return value;
 }
 
-export { signupValidation, changePasswordValidation, otpValidation,addAvailabilityValidation,appointmentBookingValidation,slotAvailabilityValidation,updateDoctorValidation,updatePatientValidation };
+const updateAvailabilityValidation=(schema,payload)=>{
+    const {error,value}=schema.validate(payload)
+    if(error){
+        throw new Error(`Validation Error: ${error.details[0].message}`)
+    }
+    return value;
+}
+
+const removeAvailabilityValidation=(schema,payload)=>{
+    const {error,value}=schema.validate(payload)
+    if(error){
+        throw new Error(`Validation Error: ${error.details[0].message}`)
+    }
+    return value;
+}
+
+
+export { signupValidation, changePasswordValidation, otpValidation,addAvailabilityValidation,
+         appointmentBookingValidation,slotAvailabilityValidation,updateDoctorValidation,
+         updatePatientValidation,updateAvailabilityValidation,removeAvailabilityValidation };
 
 

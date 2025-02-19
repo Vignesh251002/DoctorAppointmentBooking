@@ -1,6 +1,8 @@
 import express from "express";
 import pool from "../database/db_conncetion.mjs";
 import { verifytoken } from "../utils/authentication.mjs";
+import removeAvailabilitySchema from "../schema/removeAvailabilitySchema.mjs";
+import { removeAvailabilityValidation } from "../validation/Schemavalidation_fun.mjs";
 
 const router = express.Router();
 
@@ -10,6 +12,8 @@ let message
 let data
 
     try {
+
+        removeAvailabilityValidation(removeAvailabilitySchema,req.body)
         const {availability_id,doctor_id}=req.body
         if(req.user.userid!=doctor_id){
             throw new Error("UnAthorized Access")

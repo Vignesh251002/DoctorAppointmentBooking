@@ -47,13 +47,14 @@ CREATE TABLE usersdetails
 
 CREATE TABLE appointments (
     id UUID PRIMARY KEY,
-    doctor_id INTEGER references users(id) unique,
-    patient_id INTEGER references users(id) unique,
+    doctor_id INTEGER references users(id),
+    patient_id INTEGER references users(id),
     appointment_date DATE not null,
     appointment_session VARCHAR(15) not null,
     start_time TIME not null,
     end_time TIME not null,
-    status VARCHAR(15) default false
+    status VARCHAR(15) default false,
+	CONSTRAINT unique_appointments UNIQUE (patient_id, appointment_date)
 );
 
 
@@ -73,8 +74,8 @@ CREATE TABLE user_otp_verification (
 CREATE TABLE canceled_appointments (
     id SERIAL PRIMARY KEY,
     appointment_id uuid references appointments(id) unique,
-    patient_id INTEGER references users(id) unique,
-    doctor_id INTEGER references users(id) unique,
+    patient_id INTEGER references users(id),
+    doctor_id INTEGER references users(id),
     cancel_reason VARCHAR(255) not null ,
     cancel_date TIMESTAMP
 );

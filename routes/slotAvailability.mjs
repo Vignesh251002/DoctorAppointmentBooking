@@ -19,7 +19,7 @@ router.get("/",verifytoken, async (req, res) => {
             throw new Error("Unathorized Access")
         }
         
-        if (new Date(date)<= new Date()) {
+        if (new Date(date).getTime() < new Date().setHours(0, 0, 0, 0)) {
             throw new Error("Invalid date. Don't enter a past date");
         }
 

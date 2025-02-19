@@ -2,6 +2,8 @@ import express from "express";
 import pool from "../database/db_conncetion.mjs";
 import { user_updateAvailability } from "../models/db_functions.mjs";
 import { verifytoken } from "../utils/authentication.mjs";
+import { updateAvailabilityValidation } from "../validation/Schemavalidation_fun.mjs";
+import updateAvailabilitySchema from "../schema/updateAvailabilitySchema.mjs";
 
 const router = express.Router();
 
@@ -15,7 +17,7 @@ let data
         if(req.user.userid!=doctor_id){
             throw new Error("Unathorized Access")
         }
-
+        updateAvailabilityValidation(updateAvailabilitySchema,req.body)
         const checkAvailability = await pool.query( "SELECT * FROM doctor_availability WHERE id = $1",  [availability_id]);
         if (checkAvailability.rowCount === 0) {
             throw new Error("Availability Slot not found")

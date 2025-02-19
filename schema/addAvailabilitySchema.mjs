@@ -23,10 +23,20 @@ const addAvailabilitySchema = Joi.object({
             "string.base": "Session must be a string.",
             "any.required": "Session is required."
         }),
-    start_time: Joi.string()
-        .optional(),
-    end_time: Joi.string()
-        .optional(),    
+     start_time: Joi.string()
+            .pattern(/^([0-9]{1,2}):([0-9]{2}) (am|pm)$/i)
+            .required()
+            .messages({
+                "any.required": "Start time is required.",
+                "string.pattern.base": "Start time must be in 'hh:mm am/pm' format."
+            }),
+        end_time: Joi.string()
+            .pattern(/^([0-9]{1,2}):([0-9]{2}) (am|pm)$/i)
+            .required()
+            .messages({
+                "any.required": "End time is required.",
+                "string.pattern.base": "End time must be in 'hh:mm am/pm' format."
+            }),   
     slot_interval: Joi.number()
         .integer()
         .min(10)
