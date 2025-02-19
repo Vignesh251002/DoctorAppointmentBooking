@@ -21,10 +21,6 @@ let message
 
         await updateDoctorValidation(updateDoctorSchema,req.body)
 
-        if (!first_name && !last_name && !specialization && !experience && !consultation_fee && !location && !contact  && !address) {
-            return res.status(400).json({ error: "All fields are required" });
-        }
-
         if(doctor_id!=req.user.userid){
             throw new Error("unauthorized access")
         }

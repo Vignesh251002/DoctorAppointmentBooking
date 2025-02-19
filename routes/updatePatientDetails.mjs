@@ -6,6 +6,9 @@ import { user_updatePatientContact } from '../models/db_functions.mjs';
 import { verifytoken } from '../utils/authentication.mjs';
 import { user_updateAppoint } from '../models/db_functions.mjs';
 import { user_selectdetails } from '../models/db_functions.mjs';
+import updatePatientSchema from '../schema/updatePatientSchema.mjs';
+import { updatePatientValidation } from '../validation/Schemavalidation_fun.mjs';
+
 console.log("files are successfully uploaded");
 
 const router = express.Router();
@@ -16,6 +19,9 @@ let statuscode=400
 let message    
     try {
         const {patient_id,  first_name, last_name, date_of_birth, gender, blood_group, location, contact, address } = req.body;
+
+        await updatePatientValidation(updatePatientSchema,req.body)
+
 
         if (!patient_id && !first_name && !date_of_birth && !gender && !blood_group && !last_name && !location && !contact  && !address) {
             return res.status(400).json({ error: "All fields are required" });
