@@ -22,7 +22,7 @@ const signupschema = Joi.object({
             "string.pattern.base": `"password" must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character`,
             "any.required": `"password" is required`
         }),
-        role:Joi.string().optional()
+        role:Joi.string().required()
 });
 
 

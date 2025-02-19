@@ -17,15 +17,14 @@ router.get("/", verifytoken, async (req, res) => {
     }
 
     const doctorResult = await pool.query(
-      "SELECT first_name, last_name, date_of_birth, gender, blood_group, specialization, experience, consultation_fee FROM usersdetails WHERE user_id = $1",
-      [doctor_id]
+      "SELECT first_name, last_name, date_of_birth, gender, blood_group, specialization, experience, consultation_fee FROM usersdetails WHERE user_id = $1",[doctor_id]
     );
 
     const contactResult = await pool.query("select contact,location,address from users_contact where userid=$1",[doctor_id])
      contactData=contactResult.rows[0]
     
     if (doctorResult.rowCount === 0) {
-      return res.status(404).json({ error: "Doctor profile not found" });
+      throw new Error("Doctor profile not found")
     }
 
     profileData = doctorResult.rows[0];

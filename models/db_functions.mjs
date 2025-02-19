@@ -41,21 +41,36 @@ const user_detailsSelect=(insertvalues5)=>{
 }
 
 //updateDoctorDetails
-const user_updateDoctor=(insertvalues)=>{
+const user_insertDoctor=(insertvalues)=>{
     const insertquery= "insert into usersdetails (user_id,first_name,last_name,date_of_birth,gender,blood_group,specialization,experience,consultation_fee) values ($1,$2,$3,$4,$5,$6,$7,$8,$9) returning*";
      return pool.query(insertquery,insertvalues)
 }
 
+const user_updateDoctor=(updatevalues)=>{
+    const updatequery="update usersdetails set first_name=$1,last_name=$2,date_of_birth=$3,gender=$4,blood_group=$5,specialization=$6,experience=$7,consultation_fee=$8 where user_id=$9 returning*";
+    return pool.query(updatequery,updatevalues)
+}
+
 const user_updateDoctorContact=(insertvalues)=>{
-    const insertquery="update users_contact set contact=$1,location=$2,address=$3 where userid=$4";
+    const insertquery="update users_contact set contact=$1,location=$2,address=$3 where userid=$4 returning*";
     return pool.query(insertquery,insertvalues)
+}
+
+const user_selectdetails=(selectvalues)=>{
+    const selectquery="select * from usersdetails where user_id=$1";
+    return pool.query(selectquery,selectvalues)
 }
 
 
 //updatePatientDetails
-const user_updatePatient=(insertvalues)=>{
+const user_insertPatient=(insertvalues)=>{
     const insertquery= "insert into usersdetails (user_id,first_name,last_name,date_of_birth,gender,blood_group) values ($1,$2,$3,$4,$5,$6) returning*";
      return pool.query(insertquery,insertvalues)
+}
+
+const user_updatePatient=(updatevalues)=>{
+    const updatequery="update usersdetails set first_name=$1,last_name=$2,date_of_birth=$3,gender=$4,blood_group=$5 where user_id=$6 returning*";
+    return pool.query(updatequery,updatevalues)
 }
 
 const user_updatePatientContact=(insertvalues)=>{
@@ -103,10 +118,9 @@ const user_updateAvailability=(insertvalues)=>{
 
 
 
-
-
 export {users_signup,users_contact,user_otp,user_otpselect,
     user_updateAttempts,user_updateVerify,user_detailsSelect,
-    user_getId,user_updateDoctor,user_updatePatient,
+    user_getId,user_insertDoctor,user_insertPatient,
     addAvailability,user_updateDoctorContact,user_updatePatientContact,
-    user_cancelAppoint,user_getAppoint,user_updateAppoint,user_updateAvailability}
+    user_cancelAppoint,user_getAppoint,user_updateAppoint,user_updateAvailability,
+    user_selectdetails,user_updateDoctor,user_updatePatient}

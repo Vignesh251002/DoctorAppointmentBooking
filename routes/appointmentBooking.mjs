@@ -41,30 +41,31 @@ router.post("/",verifytoken, async (req, res) => {
         
         console.log(startTime,endTime);
 
-        const formattedStart = moment(startTime, "hh:mm A").format("HH:mm:ss");
-        const formattedEnd = moment(endTime, "hh:mm A").format("HH:mm:ss");
-        
-
         const availabilityQuery = `SELECT start_time, end_time, slot_interval FROM doctor_availability WHERE doctor_id = $1 AND date = $2`;
         const availabilityResult = await pool.query(availabilityQuery, [doctor_id, appointment_date]);
         console.log(availabilityResult);
 
+        if(availabilityResult.rowCount===0){
+            throw new Error("No slot availabile for the date and time you selected")
+        }
+
+        const formattedStart = moment(startTime, "hh:mm A").format("HH:mm:ss");
+        const formattedEnd = moment(endTime, "hh:mm A").format("HH:mm:ss");
+        console.log(formattedStart,formattedEnd);
+
         const {start_time,end_time,slot_interval} = availabilityResult.rows[0];
         console.log(start_time,end_time);
-
+        
+        
         if (!validateMinutesBasedOnInterval(startTime, slot_interval)) {
             throw new Error(`Invalid start time. Minutes must be a multiple of ${slot_interval}.`);
         }
         if (!validateMinutesBasedOnInterval(endTime, slot_interval)) {
             throw new Error(`Invalid end time. Minutes must be a multiple of ${slot_interval}.`);
         } 
-        
-        if (availabilityResult.rowCount === 0) {
-            throw new Error("Doctor is not available on that date")
-        }
 
         if (start_time > formattedStart || end_time < formattedEnd) {
-            throw new Error("Choose the timing from the doctor available time slot")
+            throw new Error("Choose the start and end timing from the doctor available time slot")
         }
         
         const bookingCheckQuery = `SELECT * FROM appointments WHERE doctor_id = $1 AND appointment_date = $2 AND start_time = $3 AND end_time = $4 and status='booked'`;
@@ -83,11 +84,11 @@ router.post("/",verifytoken, async (req, res) => {
     } catch (error) {
         console.error("Error occured",error);
         message=error.message
-        return res.status(statuscode).json({ message:error.message });
+         
     }
-    // finally{
-    //     res.status(statuscode).json({message:message})
-    // }
+    finally{
+        res.status(statuscode).json({message:message})
+    }
 })
 
 export default router

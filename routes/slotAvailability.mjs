@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get("/",verifytoken, async (req, res) => {
     try {
-        const { patient_id,doctor_id, date } = req.body;
+        const { patient_id,doctor_id, date,session } = req.body;
         console.log(req.body);
         
         console.log(req.user);
@@ -16,12 +16,16 @@ router.get("/",verifytoken, async (req, res) => {
             throw new Error("Unathorized Access")
         }
         
-        const insertquery = `SELECT start_time, end_time,slot_interval FROM doctor_availability WHERE doctor_id = $1 AND date = $2`;
-        const doctorAvailability = await pool.query(insertquery, [doctor_id, date]);
+        if (new Date(date)<= new Date()) {
+            throw new Error("Invalid date. Don't enter a past date");
+        }
+
+        const insertquery = `SELECT start_time, end_time,slot_interval FROM doctor_availability WHERE doctor_id = $1 AND date = $2 AND session=$3`;
+        const doctorAvailability = await pool.query(insertquery, [doctor_id, date,session]);
         console.log(doctorAvailability);
 
         if (doctorAvailability.rowCount === 0) {
-            return res.status(404).json({ message: "No slot available on the selected date" });
+            return res.status(404).json({ message: "No slot available on the selected date and session" });
         }
         const { start_time, end_time, slot_interval } = doctorAvailability.rows[0];
 
@@ -46,7 +50,7 @@ router.get("/",verifytoken, async (req, res) => {
                 moment(slot.end_time, "hh:mm A").format("HH:mm a") === moment(booked.end, "HH:mm a").format("HH:mm a") && booked.status=='booked'
             );
             return {
-                slot,
+                ...slot,
                 status: matchingSlot ? matchingSlot.status : "available"
             };
         });

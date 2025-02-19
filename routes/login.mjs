@@ -20,11 +20,11 @@ router.post("/", async (req, res) => {
   try {
     const { email , password } = req.body;
     const selectresult=await user_detailsSelect([email])
+
+    if (selectresult.rowCount === 0) throw new Error("User does not exist");
+    
     console.log("Row Count:", selectresult);
     console.log(selectresult.rows[0].password);
-    
-    
-    if (selectresult.rowCount === 0) throw new Error("User does not exist");
 
     if(selectresult.rows[0].verified===false)
     throw new Error("User not verified.Please verify your mail id")
