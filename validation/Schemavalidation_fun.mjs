@@ -27,9 +27,40 @@ const otpValidation = (schema,payload)=>{
     return value;
 };
 
+const addAvailabilityValidation=(schema,payload)=>{
+    const {error,value}=schema.validate(payload)
+    if(error){
+        throw new Error(`Validation Error: ${error.details[0].message}`)
+    }
+    return value;
+}
 
 
+const appointmentBookingValidation=(schema,payload)=>{
+    const {error,value}=schema.validate(payload)
+    if(error){
+        throw new Error(`Validation Error: ${error.details[0].message}`)
+    }
+    return value;
+}
 
-export { signupValidation, changePasswordValidation, otpValidation };
+
+const slotAvailabilityValidation=(schema,payload)=>{
+    const {error,value}=schema.validate(payload)
+    if(error){
+        throw new Error(`Validation Error: ${error.details[0].message}`)
+    }
+    return value;
+}
+
+const updateDoctorValidation=(schema,payload)=>{
+    const {error,value}=schema.validate(payload)
+    if(error){
+        throw new Error(`Validation Error: ${error.details[0].message}`)
+    }
+    return value;
+}
+
+export { signupValidation, changePasswordValidation, otpValidation,addAvailabilityValidation,appointmentBookingValidation,slotAvailabilityValidation,updateDoctorValidation };
 
 

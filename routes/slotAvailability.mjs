@@ -2,6 +2,8 @@ import express from 'express';
 import moment from 'moment';
 import pool from '../database/db_conncetion.mjs';
 import { verifytoken } from '../utils/authentication.mjs';
+import { slotAvailabilityValidation } from '../validation/Schemavalidation_fun.mjs';
+import slotAvailabilitySchema from "../schema/slotAvailabilitySchema.mjs";
 
 const router = express.Router();
 
@@ -10,6 +12,7 @@ router.get("/",verifytoken, async (req, res) => {
         const { patient_id,doctor_id, date,session } = req.body;
         console.log(req.body);
         
+        await slotAvailabilityValidation(slotAvailabilitySchema,req.body)
         console.log(req.user);
 
         if(req.user.userid!=patient_id){

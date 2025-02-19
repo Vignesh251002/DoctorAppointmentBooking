@@ -2,6 +2,9 @@ import express from "express";
 import { addAvailability } from "../models/db_functions.mjs";
 import { v4 as uuidv4 } from "uuid";
 import { verifytoken } from "../utils/authentication.mjs";
+import { addAvailabilityValidation } from "../validation/Schemavalidation_fun.mjs";
+import addAvailabilitySchema from "../schema/addAvailabilitySchema.mjs";
+
 
 const router = express.Router();
 
@@ -14,43 +17,48 @@ router.post("/", verifytoken, async (req, res) => {
     const { doctor_id, date, session, start_time, end_time, slot_interval } = req.body;
 
     console.log(req.user);
+    await addAvailabilityValidation(addAvailabilitySchema, req.body)
+    console.log("Validation successfull");
+      
 
     if (req.user.userid !== doctor_id) {
       throw new Error("Unauthorized Access");
     }
+    
+    if (new Date(date).getTime() < new Date()) {
+      throw new Error("Invalid date. Don't enter a past date and todays date to add avalibiity");
+    }
 
-    if(new Date(date)<Date.now()){
-      throw new Error("Invalid date. Don't enter the past date")
-      }
-
-    // Normalize date to ignore time when comparing
-    // const inputDate = new Date(date);
-    // const today = new Date();
-    // today.setHours(0, 0, 0, 0);
-    // inputDate.setHours(0, 0, 0, 0);
-
-    // if (inputDate < today) {
-    //   throw new Error("Invalid date. Don't enter a past date");
-    // }
-
-    const trimmedTime1 = start_time.trim(); 
-    const [starttimePart, startperiod] = trimmedTime1.split(" "); 
-    console.log(starttimePart)
+      function convertTo24HourFormat(time12h) {
+        const [time, period] = time12h.split(" ");
+        let [hours, minutes] = time.split(":").map(Number);
+    
+        if (period.toLowerCase() === "pm" && hours !== 12) {
+            hours += 12;
+        } else if (period.toLowerCase() === "am" && hours === 12) {
+            hours = 0; 
+        }
+        return hours * 60 + minutes; 
+    }
+    
+    const trimmedStartTime = start_time.trim();
+    const trimmedEndTime = end_time.trim();
+    
+    const startMinutes = convertTo24HourFormat(trimmedStartTime);
+    const endMinutes = convertTo24HourFormat(trimmedEndTime);
+    
     if (session.toLowerCase() === "morning") {
-      if ( starttimePart>"11:59 am") {
-          throw new Error("Invalid time range for morning session. Must be in before 12:00 pm");
-      }
+        if (startMinutes < 300 || startMinutes >= 720) { 
+            throw new Error("Invalid time range for morning session. Must be before 11:59 AM");
+        }
     }
-
-    const trimmedTime2 = start_time.trim(); 
-    const [endtimePart, endperiod] = trimmedTime2.split(" "); 
-
+    
     if (session.toLowerCase() === "evening") {
-      if ( endtimePart<"02:00 pm") {
-          throw new Error("Invalid time range for evening session. Must be in after 02:00 pm");
-      }
+        if (startMinutes < 840 || startMinutes >= 1439) { 
+            throw new Error("Invalid time range for evening session. Must be after 2:00 PM");
+        }
     }
-
+    
     const availabilityId = uuidv4();
     const addvalues = [doctor_id, availabilityId, date, session, start_time, end_time, slot_interval];
     

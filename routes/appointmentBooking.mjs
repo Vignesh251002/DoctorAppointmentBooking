@@ -4,6 +4,9 @@ import { v4 as uuidv4 } from 'uuid';
 import pool from '../database/db_conncetion.mjs';
 console.log("files are successfully imported");
 import { verifytoken } from '../utils/authentication.mjs';
+import appointmentBookingSchema from '../schema/appointmentBooking.mjs';
+import { appointmentBookingValidation } from '../validation/Schemavalidation_fun.mjs';
+
 
 const router = express.Router();
 
@@ -30,7 +33,7 @@ router.post("/",verifytoken, async (req, res) => {
     try {
 
         console.log(req.user.email);
-
+        await appointmentBookingValidation(appointmentBookingSchema,req.body)
         const { doctor_id, patient_id, appointment_date, appointment_session, startTime, endTime, } = req.body;
         console.log(req.body);
         
@@ -41,8 +44,8 @@ router.post("/",verifytoken, async (req, res) => {
         
         console.log(startTime,endTime);
 
-        const availabilityQuery = `SELECT start_time, end_time, slot_interval FROM doctor_availability WHERE doctor_id = $1 AND date = $2`;
-        const availabilityResult = await pool.query(availabilityQuery, [doctor_id, appointment_date]);
+        const availabilityQuery = `SELECT start_time, end_time, slot_interval FROM doctor_availability WHERE doctor_id = $1 AND date = $2 AND session=$3`;
+        const availabilityResult = await pool.query(availabilityQuery, [doctor_id, appointment_date,appointment_session]);
         console.log(availabilityResult);
 
         if(availabilityResult.rowCount===0){
@@ -79,7 +82,8 @@ router.post("/",verifytoken, async (req, res) => {
         const insertQuery = `INSERT INTO appointments (id ,doctor_id, patient_id, appointment_date, appointment_session, start_time, end_time, status) VALUES ($1, $2, $3, $4, $5,$6,$7 ,'booked') RETURNING *`;
         const newAppointment = await pool.query(insertQuery, [id, doctor_id, patient_id, appointment_date,appointment_session, formattedStart, formattedEnd]);
         
-        res.status(201).json({ message: "Appointment booked successfully", appointment_details: newAppointment.rows[0] });
+        statuscode=200
+        message="Appointment Successfully Booked"
 
     } catch (error) {
         console.error("Error occured",error);

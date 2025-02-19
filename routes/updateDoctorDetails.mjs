@@ -6,6 +6,8 @@ import { verifytoken } from '../utils/authentication.mjs';
 import { user_updateDoctorContact } from '../models/db_functions.mjs';
 import { user_selectdetails } from '../models/db_functions.mjs';
 import { user_updateDoctor } from '../models/db_functions.mjs';
+import updateDoctorSchema from '../schema/updateDoctorSchema.mjs';
+import { updateDoctorValidation } from '../validation/Schemavalidation_fun.mjs';
 
 const router = express.Router();
 
@@ -14,7 +16,10 @@ router.put("/", verifytoken, async (req, res) => {
 let statuscode=400
 let message    
     try {
+
         const {doctor_id, first_name, last_name,date_of_birth, gender,blood_group,specialization, experience, consultation_fee, location, contact,address } = req.body;
+
+        await updateDoctorValidation(updateDoctorSchema,req.body)
 
         if (!first_name && !last_name && !specialization && !experience && !consultation_fee && !location && !contact  && !address) {
             return res.status(400).json({ error: "All fields are required" });
